@@ -3,6 +3,7 @@ import { ref } from 'vue'
 
 const message = ref('');
 const noteList = ref([]);
+import { onMounted } from 'vue';
 
 const createTask = () => {
   if (message.value.trim() !== "") {
@@ -12,11 +13,37 @@ const createTask = () => {
   } else {
     alert("Введите текст в поле для ввода");
   }
+  saveNotesToLocalStorage(noteList.value);
+  
 }
 
 function Delete(i){
     noteList.value.splice(i,1);
+    saveNotesToLocalStorage(noteList.value);
+    console.log("Заметка: " + i + ", удалена " );
 }
+
+function saveNotesToLocalStorage(nt) {
+  localStorage.setItem('notes', JSON.stringify(nt));
+  console.log("Список заметок сохранен в localStorage");
+}
+
+function loadNotesFromLocalStorage() {
+  const savedNotes = localStorage.getItem('notes');
+  if (savedNotes) {
+    noteList.value = JSON.parse(savedNotes);
+    console.log("Заметки загружены из localStorage");
+  } else {
+    console.log("Нет сохраненных заметок в localStorage");
+  }
+}
+
+
+onMounted(() => {
+loadNotesFromLocalStorage();
+  console.log("Компонент загружен и заметки из localStorage получены");
+
+});
 </script>
 
 <template>
